@@ -55,9 +55,17 @@ def _bond_coupon_periods_0(settle=None, mat=1, freq=2, daycount=None):
                     "isda_daycounters not available"
                     if no_isda else ""))
             daycounter = daycounters[daycount]
-        discounting_fraction = daycounter.year_fraction(
+        if daycount == 'actual/actual':
+            # actual/actual day count convention for frequency > 1 is best handled through 
+            # a simple computation below. The "actualactual.year_fraction()" produced by isda_daycounters
+            # outputs fractions relative to the full year. The frequency adjustment in the code
+            # for non-leap years, earlier, produced incorrect accrual fractions. 
+            discounting_fraction = (next_coupon - settle) / (next_coupon - prev_coupon)
+            accrual_fraction = (settle - prev_coupon) / (next_coupon - prev_coupon)
+        else:
+            discounting_fraction = daycounter.year_fraction(
             settle, next_coupon) * freq
-        accrual_fraction = daycounter.year_fraction(
+            accrual_fraction = daycounter.year_fraction(
             prev_coupon, settle) * freq
     else:
         n = ceil(mat*freq)
