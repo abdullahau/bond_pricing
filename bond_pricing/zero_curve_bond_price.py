@@ -119,14 +119,10 @@ def zero_to_par(zero_prices=None, zero_yields=None, freq=1):
     if zero_prices is None:
         zero_yields, freq = array(zero_yields), array(freq)
         t = arange(len(zero_yields)) + 1
-        zero_prices = (1 + zero_yields/freq)**(-t)
-    annuity = 0
-    par = empty_like(zero_prices)
-    for i, zero_price in enumerate(zero_prices):
-        annuity = annuity + zero_price
-        pv_redeem = zero_price
-        pv_cpns = 1 - pv_redeem
-        par[i] = (pv_cpns / annuity) * freq
+        zero_prices = (1 + zero_yields / freq) ** (-t)
+    else:
+        zero_prices, freq = array(zero_prices), array(freq)
+    par = ((1 - zero_prices) / np.cumsum(zero_prices)) * freq
     return par
 
 
