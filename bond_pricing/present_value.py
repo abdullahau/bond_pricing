@@ -226,8 +226,8 @@ def duration(cf, rate, cf_freq=1, comp_freq=1, cf_t=None,
             cf_ta = np.arange(start=start, step=1/cf_freq, stop=stop)
         else:
             cf_ta = cf_t
-        cc_rate = equiv_rate(rate, from_freq=comp_freq, to_freq=np.inf)
-        df = exp(-cc_rate * cf_ta)
+        cc_rate = equiv_rate(rate, from_freq=cf_freq, to_freq=comp_freq)
+        df = exp(-cf_ta * np.log(1 + cc_rate))
         return np.dot(cf*df, cf_ta) / np.dot(cf, df)
 
     D = vectorize(one_duration)(
